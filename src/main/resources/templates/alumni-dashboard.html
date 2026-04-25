@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Alumni</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <h1 class="logo">Sistem Informasi Alumni</h1>
+        <ul class="nav-links">
+          <li><a href="/alumni/dashboard">Dashboard</a></li>
+          <li><a href="/alumni/profile">Profil</a></li>
+          <li><a href="/alumni/career">Riwayat Karir</a></li>
+          <li><a href="/career/statistic">Statistik</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <div class="container">
+        <div class="welcome-card">
+          <h2>Selamat Datang, <span th:text="${alumni.name}">Nama</span>!</h2>
+          <p>Anda login sebagai Alumni</p>
+        </div>
+
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <h3>Total Riwayat Pekerjaan</h3>
+            <p class="stat-number" th:text="${jobCount}">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Jurusan</h3>
+            <p class="stat-text" th:text="${alumni.major}">Jurusan</p>
+          </div>
+          <div class="stat-card">
+            <h3>Angkatan</h3>
+            <p class="stat-number" th:text="${alumni.enrollmentYear}">0</p>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <a href="/alumni/career" class="btn btn-primary">Kelola Riwayat Karir</a>
+          <a href="/alumni/profile" class="btn btn-secondary">Update Profil</a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

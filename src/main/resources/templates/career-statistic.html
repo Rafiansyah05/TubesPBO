@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistik Karir</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <h1 class="logo">Sistem Informasi Alumni</h1>
+        <ul class="nav-links">
+          <li><a href="/">Beranda</a></li>
+          <li><a href="/career/statistic">Statistik Karir</a></li>
+          <li><a href="/login">Login</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <div class="container">
+        <div class="section">
+          <h2>Top 10 Perusahaan (Seluruh Alumni)</h2>
+          <div class="company-list">
+            <div th:each="company, iterStat : ${topCompanies}" class="company-item">
+              <span th:text="${iterStat.index + 1} + '. ' + ${company.company}">Company</span>
+              <span class="badge" th:text="${company.count} + ' alumni'">Count</span>
+            </div>
+            <div th:if="${topCompanies.isEmpty()}">Belum ada data perusahaan.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Distribusi Perusahaan per Jurusan</h2>
+          <div th:each="entry : ${distribusi}">
+            <h3 th:text="'Jurusan: ' + ${entry.key}">Major</h3>
+            <div class="company-list">
+              <div th:each="company, iterStat : ${entry.value}" class="company-item">
+                <span th:text="${iterStat.index + 1} + '. ' + ${company.company}">Company</span>
+                <span class="badge" th:text="${company.count} + ' alumni'">Count</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

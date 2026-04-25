@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Sistem Informasi Alumni</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <h1 class="logo">Sistem Informasi Alumni</h1>
+        <ul class="nav-links">
+          <li><a href="/">Beranda</a></li>
+          <li><a href="/career/statistic">Statistik Karir</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="login-container">
+      <div class="login-card">
+        <h2>Login</h2>
+        <p class="login-subtitle">Masuk sebagai Alumni atau Admin</p>
+
+        <div th:if="${error}" class="alert alert-error">
+          <span th:text="${error}"></span>
+        </div>
+
+        <form action="/login" method="post">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="email@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="******" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <div class="demo-accounts">
+          <h4>Akun Demo:</h4>
+          <ul>
+            <li><strong>Alumni:</strong> budi@email.com / pass1</li>
+            <li><strong>Admin:</strong> hendra@kampus.ac.id / adminpass</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
