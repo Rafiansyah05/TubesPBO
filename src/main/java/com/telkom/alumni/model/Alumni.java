@@ -14,7 +14,7 @@ public class Alumni extends User {
     @Column(name = "major")
     private String major;
     
-    @OneToMany(mappedBy = "alumni", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "alumni", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<JobExperience> jobExperience = new ArrayList<>();
     
     public Alumni() {}
