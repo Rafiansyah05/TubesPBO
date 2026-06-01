@@ -182,6 +182,10 @@ public class AlumniController extends HttpServlet {
         job.setIdJobExperience(idJob);
         job.update();
 
+        // refresh job list in alumni object and update session
+        alumni.getJobExperience();
+        request.getSession().setAttribute("user", alumni);
+
         response.sendRedirect(request.getContextPath() + "/alumni/profile");
     }
 

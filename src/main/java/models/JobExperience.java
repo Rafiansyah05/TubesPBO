@@ -4,6 +4,7 @@ import interfaces.GenerateID;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.util.UUID;
@@ -82,6 +83,13 @@ public class JobExperience extends JDBC implements GenerateID {
         try {
             connect();
             if (conn == null) return false;
+            // ambil company lama untuk mengupdate statistik jika berubah
+            String oldCompanyId = null;
+            String selSql = "SELECT id_company FROM job_experience WHERE id_job = ?";
+            PreparedStatement selPs = conn.prepareStatement(selSql);
+            selPs.setString(1, this.idJobExperience);
+            ResultSet rs = selPs.executeQuery();
+            if (rs.next()) oldCompanyId = rs.getString("id_company");
 
             String sql = "UPDATE job_experience SET id_company = ?, industri = ?, jabatan = ?, "
                        + "start_date = ?, end_date = ? WHERE id_job = ?";
@@ -93,6 +101,28 @@ public class JobExperience extends JDBC implements GenerateID {
             ps.setDate(5, this.endDate);
             ps.setString(6, this.idJobExperience);
             int rows = ps.executeUpdate();
+
+            // update jumlah_alumni untuk company lama dan company baru
+            try {
+                String sqlUpdateCompany = "UPDATE companies SET jumlah_alumni = "
+                                        + "(SELECT COUNT(DISTINCT id_alumni) FROM job_experience WHERE id_company = ?) "
+                                        + "WHERE id_company = ?";
+                PreparedStatement psCompany = conn.prepareStatement(sqlUpdateCompany);
+                // update for new company
+                psCompany.setString(1, this.company.getIdCompany());
+                psCompany.setString(2, this.company.getIdCompany());
+                psCompany.executeUpdate();
+
+                // update for old company if different
+                if (oldCompanyId != null && !oldCompanyId.equals(this.company.getIdCompany())) {
+                    psCompany.setString(1, oldCompanyId);
+                    psCompany.setString(2, oldCompanyId);
+                    psCompany.executeUpdate();
+                }
+            } catch (Exception ex) {
+                System.out.println("Error update company count after job update: " + ex.getMessage());
+            }
+
             return rows > 0;
         } catch (Exception e) {
             System.out.println("Error update job: " + e.getMessage());

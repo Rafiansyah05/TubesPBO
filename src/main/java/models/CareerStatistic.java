@@ -30,7 +30,7 @@ public class CareerStatistic extends JDBC {
 
             String sql = "SELECT c.id_company, c.name, c.location, COUNT(DISTINCT j.id_alumni) as jml "
                        + "FROM companies c "
-                       + "LEFT JOIN job_experience j ON c.id_company = j.id_company "
+                       + "LEFT JOIN job_experience j ON c.id_company = j.id_company AND j.end_date IS NULL "
                        + "GROUP BY c.id_company, c.name, c.location "
                        + "ORDER BY jml DESC LIMIT 10";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -71,14 +71,14 @@ public class CareerStatistic extends JDBC {
             if (major == null || major.isEmpty() || major.equalsIgnoreCase("semua")) {
                 sql = "SELECT c.id_company, c.name, c.location, COUNT(DISTINCT j.id_alumni) as jml "
                     + "FROM companies c "
-                    + "LEFT JOIN job_experience j ON c.id_company = j.id_company "
+                    + "LEFT JOIN job_experience j ON c.id_company = j.id_company AND j.end_date IS NULL "
                     + "GROUP BY c.id_company, c.name, c.location "
                     + "ORDER BY jml DESC LIMIT 10";
                 ps = conn.prepareStatement(sql);
             } else {
                 sql = "SELECT c.id_company, c.name, c.location, COUNT(DISTINCT j.id_alumni) as jml "
                     + "FROM companies c "
-                    + "JOIN job_experience j ON c.id_company = j.id_company "
+                    + "JOIN job_experience j ON c.id_company = j.id_company AND j.end_date IS NULL "
                     + "JOIN alumni a ON j.id_alumni = a.id_user "
                     + "WHERE LOWER(a.major) = LOWER(?) "
                     + "GROUP BY c.id_company, c.name, c.location "
@@ -181,6 +181,7 @@ public class CareerStatistic extends JDBC {
                     + "FROM job_experience j "
                     + "JOIN alumni a ON j.id_alumni = a.id_user "
                     + "JOIN companies c ON j.id_company = c.id_company "
+                    + "WHERE j.end_date IS NULL "
                     + "GROUP BY a.major, c.name "
                     + "ORDER BY alumni_count DESC LIMIT 10";
                 ps = conn.prepareStatement(sql);
@@ -189,7 +190,7 @@ public class CareerStatistic extends JDBC {
                     + "FROM job_experience j "
                     + "JOIN alumni a ON j.id_alumni = a.id_user "
                     + "JOIN companies c ON j.id_company = c.id_company "
-                    + "WHERE LOWER(a.major) = LOWER(?) "
+                    + "WHERE j.end_date IS NULL AND LOWER(a.major) = LOWER(?) "
                     + "GROUP BY a.major, c.name "
                     + "ORDER BY alumni_count DESC LIMIT 10";
                 ps = conn.prepareStatement(sql);
