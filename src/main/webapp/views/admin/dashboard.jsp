@@ -101,7 +101,7 @@
                                 <th>Nama</th>
                                 <th>Jurusan</th>
                                 <th>Tahun</th>
-                                <th>Jml. Pekerjaan</th>
+                                <th>Riwayat Pekerjaan</th>
                                 <th>Status Profil</th>
                             </tr>
                         </thead>
@@ -114,7 +114,7 @@
                                     </td>
                                     <td>${alumni.major}</td>
                                     <td>${alumni.enrollmentYear}</td>
-                                    <td><span class="badge badge-warning">${alumni.jumlahJob} Jobs</span></td>
+                                    <td><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${alumni.jumlahJob > 0}">

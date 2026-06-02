@@ -52,7 +52,7 @@
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <!-- Tombol Trigger Notifikasi Email -->
-                    <button onclick="document.getElementById('modalNotif').style.display='flex'" class="btn btn-primary" style="width: auto;">
+                    <button onclick="document.getElementById('modalNotif').style.display='flex'" class="btn btn-primary" style="width: auto;display: flex; align-items: center; gap: 12px;font-size: 14px; padding: 12 24px;font-weight: 600;">
                         <i class="fas fa-paper-plane"></i> Kirim Pengingat Update
                     </button>
                 </div>
@@ -61,18 +61,18 @@
             <!-- Selection Info Bar -->
             <div id="selectionBar" class="selection-info">
                 <span><i class="fas fa-check-circle"></i> <span id="selectedCount">0</span> alumni terpilih</span>
-                <button type="button" onclick="clearSelection()" style="background: none; border: none; color: var(--danger); cursor: pointer; font-weight: 700;">Batalkan Pilihan</button>
+                <button type="button" onclick="clearSelection()" style="background: none; border: none; color: var(--danger); cursor: pointer; font-weight: 600;">Batalkan Pilihan</button>
             </div>
 
             <!-- Search & Filter -->
-            <div class="card" style="margin-bottom: 30px; padding: 20px;">
+            <div class="card" style="margin-bottom: 20px; padding: 20px;">
                 <form action="${pageContext.request.contextPath}/admin/alumni" method="get" style="display: flex; gap: 15px;">
                     <div style="flex: 1; position: relative;">
                         <i class="fas fa-search" style="position: absolute; left: 15px; top: 15px; color: var(--text-muted);"></i>
-                        <input type="text" name="q" class="form-control" placeholder="Cari nama alumni atau jurusan..." value="${keyword}" style="padding-left: 45px;">
+                        <input type="text" name="q" class="form-control" placeholder="Cari nama alumni atau jurusan..." value="${keyword}" style="padding-left: 45px;height: 48px;">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: auto; padding: 0 30px;">Cari</button>
-                    <a href="${pageContext.request.contextPath}/admin/alumni" class="btn" style="width: auto; background: #EDF2F7; color: #4A5568;">Reset</a>
+                    <button type="submit" class="btn btn-primary" style="width: 80px; height: 48px;font-size: 14px;font-weight: 600; padding: 0 24px;">Cari</button>
+                    <a href="${pageContext.request.contextPath}/admin/alumni" class="btn" style="width: 80px; height: 48px; font-size: 14px; font-weight: 600; background: #EDF2F7; color: #4A5568; display: flex; justify-content: center; align-items: center; text-decoration: none;">Reset</a>
                 </form>
             </div>
 
@@ -86,25 +86,25 @@
                                     <input type="checkbox" id="selectAll" class="custom-checkbox" onclick="toggleSelectAll(this)">
                                 </th>
                                 <th>Alumni</th>
-                                <th>Program Studi</th>
-                                <th>Tahun Masuk</th>
-                                <th>Total Kerja</th>
+                                <th style="text-align: center;">Program Studi</th>
+                                <th style="text-align: center;">Tahun Masuk</th>
+                                <th style="text-align: center;">Riwayat Pekerjaan</th>
                                 <th style="text-align: center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:forEach var="alumni" items="${daftarAlumni}">
                                 <tr>
-                                    <td class="checkbox-cell">
+                                    <td class="checkbox-cell" >
                                         <input type="checkbox" name="selected_alumni" value="${alumni.idUser}" class="custom-checkbox alumni-checkbox" onclick="updateSelection()">
                                     </td>
                                     <td>
                                         <div style="font-weight: 700; color: var(--primary);">${alumni.name}</div>
                                         <div style="font-size: 13px; color: var(--text-muted);">${alumni.email}</div>
                                     </td>
-                                    <td>${alumni.major}</td>
-                                    <td>${alumni.enrollmentYear}</td>
-                                    <td><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
+                                    <td style="text-align: center;">${alumni.major}</td>
+                                    <td style="text-align: center;">${alumni.enrollmentYear}</td>
+                                    <td style="text-align: center;"><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
                                     <td style="text-align: center;">
                                         <form action="${pageContext.request.contextPath}/admin/alumni" method="post" onsubmit="return confirm('Hapus alumni ini?')">
                                             <input type="hidden" name="action" value="deleteAlumni">
