@@ -99,10 +99,10 @@
                         <thead>
                             <tr>
                                 <th>Nama</th>
-                                <th>Jurusan</th>
-                                <th>Tahun</th>
-                                <th>Riwayat Pekerjaan</th>
-                                <th>Status Profil</th>
+                                <th style="text-align: center;">Jurusan</th>
+                                <th style="text-align: center;">Tahun</th>
+                                <th style="text-align: center;">Riwayat Pekerjaan</th>
+                                <th style="text-align: center;">Status Profil</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,18 +112,11 @@
                                         <div style="font-weight: 600;">${alumni.name}</div>
                                         <div style="font-size: 12px; color: var(--text-muted);">${alumni.email}</div>
                                     </td>
-                                    <td>${alumni.major}</td>
-                                    <td>${alumni.enrollmentYear}</td>
-                                    <td><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${alumni.jumlahJob > 0}">
-                                                <span class="badge badge-success">Terverifikasi</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="badge" style="background: #EDF2F7; color: #4A5568;">Belum Update</span>
-                                            </c:otherwise>
-                                        </c:choose>
+                                    <td style="text-align: center;">${alumni.major}</td>
+                                    <td style="text-align: center;">${alumni.enrollmentYear}</td>
+                                    <td style="text-align: center;"><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
+                                    <td style="text-align: center;">
+                                        <span class="badge ${alumni.statusClass}">${alumni.statusLabel}</span>
                                     </td>
                                 </tr>
                             </c:forEach>

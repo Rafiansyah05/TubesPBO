@@ -15,6 +15,9 @@ public class Alumni extends User implements Searching {
     private String major;
     private ArrayList<JobExperience> jobExperience;
     private int    jumlahJob;
+    private String statusLabel;
+    private String statusClass;
+    private String statusCode;
 
 
     public Alumni() {
@@ -239,6 +242,15 @@ public class Alumni extends User implements Searching {
 
     public int    getJumlahJob()       { return jumlahJob; }
     public void   setJumlahJob(int j)  { this.jumlahJob = j; }
+
+    public String getStatusLabel() { return statusLabel; }
+    public void setStatusLabel(String statusLabel) { this.statusLabel = statusLabel; }
+
+    public String getStatusClass() { return statusClass; }
+    public void setStatusClass(String statusClass) { this.statusClass = statusClass; }
+
+    public String getStatusCode() { return statusCode; }
+    public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
 
     public ArrayList<JobExperience> getJobExperienceList() { return jobExperience; }
     public void setJobExperienceList(ArrayList<JobExperience> j) { this.jobExperience = j; }

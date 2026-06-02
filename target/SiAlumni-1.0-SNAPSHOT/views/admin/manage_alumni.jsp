@@ -66,11 +66,17 @@
 
             <!-- Search & Filter -->
             <div class="card" style="margin-bottom: 20px; padding: 20px;">
-                <form action="${pageContext.request.contextPath}/admin/alumni" method="get" style="display: flex; gap: 15px;">
-                    <div style="flex: 1; position: relative;">
+                <form action="${pageContext.request.contextPath}/admin/alumni" method="get" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 280px; position: relative;">
                         <i class="fas fa-search" style="position: absolute; left: 15px; top: 15px; color: var(--text-muted);"></i>
                         <input type="text" name="q" class="form-control" placeholder="Cari nama alumni atau jurusan..." value="${keyword}" style="padding-left: 45px;height: 48px;">
                     </div>
+                    <select name="status" class="form-control" style="height: 48px; min-width: 180px;">
+                        <option value="all" ${statusFilter == 'all' ? 'selected' : ''}>Semua Status</option>
+                        <option value="aktif" ${statusFilter == 'aktif' ? 'selected' : ''}>Terbaru</option>
+                        <option value="perlu_update" ${statusFilter == 'perlu_update' ? 'selected' : ''}>Perlu Diperbarui</option>
+                        <option value="belum_update" ${statusFilter == 'belum_update' ? 'selected' : ''}>Belum Update</option>
+                    </select>
                     <button type="submit" class="btn btn-primary" style="width: 80px; height: 48px;font-size: 14px;font-weight: 600; padding: 0 24px;">Cari</button>
                     <a href="${pageContext.request.contextPath}/admin/alumni" class="btn" style="width: 80px; height: 48px; font-size: 14px; font-weight: 600; background: #EDF2F7; color: #4A5568; display: flex; justify-content: center; align-items: center; text-decoration: none;">Reset</a>
                 </form>
@@ -89,6 +95,7 @@
                                 <th style="text-align: center;">Program Studi</th>
                                 <th style="text-align: center;">Tahun Masuk</th>
                                 <th style="text-align: center;">Riwayat Pekerjaan</th>
+                                <th style="text-align: center;">Status Profil</th>
                                 <th style="text-align: center;">Aksi</th>
                             </tr>
                         </thead>
@@ -105,6 +112,7 @@
                                     <td style="text-align: center;">${alumni.major}</td>
                                     <td style="text-align: center;">${alumni.enrollmentYear}</td>
                                     <td style="text-align: center;"><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
+                                    <td style="text-align: center;"><span class="badge ${alumni.statusClass}">${alumni.statusLabel}</span></td>
                                     <td style="text-align: center;">
                                         <form action="${pageContext.request.contextPath}/admin/alumni" method="post" onsubmit="return confirm('Hapus alumni ini?')">
                                             <input type="hidden" name="action" value="deleteAlumni">
@@ -127,10 +135,10 @@
                     </div>
                     <div style="display: flex; gap: 5px;">
                         <c:if test="${currentPage > 1}">
-                            <a href="?page=${currentPage - 1}&q=${keyword}" class="btn" style="width: auto; padding: 8px 16px; font-size: 14px; background: var(--white); border: 1px solid var(--border);">Prev</a>
+                            <a href="?page=${currentPage - 1}&q=${keyword}&status=${statusFilter}" class="btn" style="width: auto; padding: 8px 16px; font-size: 14px; background: var(--white); border: 1px solid var(--border);">Prev</a>
                         </c:if>
                         <c:if test="${currentPage < totalPages}">
-                            <a href="?page=${currentPage + 1}&q=${keyword}" class="btn" style="width: auto; padding: 8px 16px; font-size: 14px; background: var(--white); border: 1px solid var(--border);">Next</a>
+                            <a href="?page=${currentPage + 1}&q=${keyword}&status=${statusFilter}" class="btn" style="width: auto; padding: 8px 16px; font-size: 14px; background: var(--white); border: 1px solid var(--border);">Next</a>
                         </c:if>
                     </div>
                 </div>

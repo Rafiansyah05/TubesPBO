@@ -330,6 +330,11 @@ tr:last-child td {
   color: #744210;
 }
 
+.badge-danger {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
 /* Alerts */
 .alert {
   padding: 16px;

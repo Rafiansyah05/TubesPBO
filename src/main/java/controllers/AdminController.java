@@ -101,15 +101,24 @@ public class AdminController extends HttpServlet {
 
      
         String keyword = request.getParameter("q");
+        String statusFilter = request.getParameter("status");
         ArrayList<Alumni> daftarAlumni;
 
         if (keyword != null && !keyword.isEmpty()) {
-     
             daftarAlumni = admin.searchAlumni(keyword);
             request.setAttribute("keyword", keyword);
         } else {
-        
             daftarAlumni = admin.getDaftarAlumni();
+        }
+
+        if (statusFilter != null && !statusFilter.isEmpty() && !"all".equalsIgnoreCase(statusFilter)) {
+            ArrayList<Alumni> filtered = new ArrayList<>();
+            for (Alumni alumni : daftarAlumni) {
+                if (statusFilter.equalsIgnoreCase(alumni.getStatusCode())) {
+                    filtered.add(alumni);
+                }
+            }
+            daftarAlumni = filtered;
         }
 
         int page = 1;
@@ -132,6 +141,7 @@ public class AdminController extends HttpServlet {
         request.setAttribute("totalData", totalData);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        request.setAttribute("statusFilter", statusFilter != null ? statusFilter : "all");
         request.getRequestDispatcher("/views/admin/manage_alumni.jsp").forward(request, response);
     }
 

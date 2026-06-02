@@ -4,6 +4,9 @@ import interfaces.Searching;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 
 
@@ -62,7 +65,8 @@ public class Admin extends User implements Searching {
             connect();
             if (conn == null) return list;
             String sql = "SELECT u.id_user, u.name, u.email, u.password, u.role, "
-                       + "a.enrollment_year, a.major, a.jumlah_job "
+                       + "a.enrollment_year, a.major, a.jumlah_job, u.created_at, "
+                       + "COALESCE((SELECT MAX(j.created_at) FROM job_experience j WHERE j.id_alumni = u.id_user), u.created_at) AS last_touch "
                        + "FROM users u "
                        + "JOIN alumni a ON u.id_user = a.id_user "
                        + "ORDER BY u.name ASC";
@@ -79,6 +83,12 @@ public class Admin extends User implements Searching {
                     rs.getInt("enrollment_year"),
                     rs.getInt("jumlah_job")
                 );
+                Timestamp createdAt = rs.getTimestamp("created_at");
+                Timestamp lastTouch = rs.getTimestamp("last_touch");
+                String[] status = buildStatus(createdAt, lastTouch);
+                alumni.setStatusLabel(status[0]);
+                alumni.setStatusClass(status[1]);
+                alumni.setStatusCode(status[2]);
                 list.add(alumni);
             }
             this.daftarAlumni = list;
@@ -98,7 +108,8 @@ public class Admin extends User implements Searching {
             connect();
             if (conn == null) return result;
             String sql = "SELECT u.id_user, u.name, u.email, u.password, "
-                       + "a.enrollment_year, a.major, a.jumlah_job "
+                       + "a.enrollment_year, a.major, a.jumlah_job, u.created_at, "
+                       + "COALESCE((SELECT MAX(j.created_at) FROM job_experience j WHERE j.id_alumni = u.id_user), u.created_at) AS last_touch "
                        + "FROM users u "
                        + "JOIN alumni a ON u.id_user = a.id_user "
                        + "WHERE LOWER(u.name) LIKE ? OR LOWER(a.major) LIKE ? "
@@ -119,6 +130,12 @@ public class Admin extends User implements Searching {
                     rs.getInt("enrollment_year"),
                     rs.getInt("jumlah_job")
                 );
+                Timestamp createdAt = rs.getTimestamp("created_at");
+                Timestamp lastTouch = rs.getTimestamp("last_touch");
+                String[] status = buildStatus(createdAt, lastTouch);
+                alumni.setStatusLabel(status[0]);
+                alumni.setStatusClass(status[1]);
+                alumni.setStatusCode(status[2]);
                 result.add(alumni);
             }
         } catch (SQLException e) {
@@ -188,6 +205,21 @@ public class Admin extends User implements Searching {
     }
 
    
+    private String[] buildStatus(Timestamp createdAt, Timestamp lastTouch) {
+        if (lastTouch == null) {
+            lastTouch = createdAt;
+        }
+        if (createdAt == null || lastTouch.equals(createdAt)) {
+            return new String[]{"Belum diperbarui", "badge-warning", "belum_update"};
+        }
+
+        long days = Duration.between(lastTouch.toInstant(), Instant.now()).toDays();
+        if (days <= 180) {
+            return new String[]{"Terbaru", "badge-success", "aktif"};
+        }
+        return new String[]{"Perlu Diperbarui", "badge-warning", "perlu_update"};
+    }
+
     @Override
     public String getProfile() {
         return "Admin: " + getName() + " | Jabatan: " + jabatan;
