@@ -168,7 +168,7 @@
                     <label>Pesan Tambahan</label>
                     <textarea name="body" class="form-control" rows="5" placeholder="Tulis instruksi tambahan untuk alumni..." required>Kami melihat Anda belum memperbarui data pekerjaan dalam 6 bulan terakhir. Mohon segera update profil Anda untuk tracer study kampus.</textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" style="display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 16px; padding: 16px 24px; font-weight: 600;">
                     <i class="fas fa-paper-plane"></i> Mulai Kirim Sekarang
                 </button>
             </form>
