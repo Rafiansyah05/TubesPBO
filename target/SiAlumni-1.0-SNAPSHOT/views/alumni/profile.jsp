@@ -177,7 +177,8 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
                         <label>Nama Perusahaan</label>
-                        <input type="text" name="company_name" id="company_name_input" class="form-control" placeholder="Contoh: Google" list="companyList" required>
+                        <input type="text" name="company_name" id="company_name_input" class="form-control" placeholder="Contoh: Google" list="companyList" autocomplete="off" required>
+                        <small style="color: var(--text-muted); font-size: 12px;">Ketik nama perusahaan, lalu pilih dari daftar yang muncul.</small>
                         <datalist id="companyList">
                             <c:forEach var="company" items="${allCompanies}">
                                 <option value="${company.name}" data-location="${company.location}">

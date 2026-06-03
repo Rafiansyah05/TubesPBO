@@ -5,6 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -25,6 +28,15 @@ public class Company extends JDBC implements GenerateID, interfaces.Searching {
         this.name         = name;
         this.location     = location;
         this.daftarAlumni = new java.util.ArrayList<>();
+    }
+
+    private static String normalizeText(String value) {
+        if (value == null) return "";
+        return value.trim().replaceAll("\\s+", " ");
+    }
+
+    private static String normalizeKey(String value) {
+        return normalizeText(value).toLowerCase(Locale.ROOT);
     }
 
     @Override
@@ -60,26 +72,35 @@ public class Company extends JDBC implements GenerateID, interfaces.Searching {
 
  
     public static Company findOrCreate(String companyName, String location) {
+        String normalizedName = normalizeText(companyName);
+        String normalizedLocation = normalizeText(location);
+
+        if (normalizedName.isEmpty()) {
+            return null;
+        }
 
         try (Connection conn = JDBC.getConnection()) {
-            
-            String sqlFind = "SELECT * FROM companies WHERE LOWER(name) = LOWER(?)";
+            String sqlFind = "SELECT * FROM companies "
+                           + "WHERE LOWER(TRIM(REGEXP_REPLACE(name, '\\s+', ' ', 'g'))) = LOWER(?)";
             PreparedStatement psFind = conn.prepareStatement(sqlFind);
-            psFind.setString(1, companyName);
+            psFind.setString(1, normalizedName);
             java.sql.ResultSet rs = psFind.executeQuery();
 
             if (rs.next()) {
-                return new Company(rs.getString("id_company"), rs.getString("name"), rs.getString("location"));
+                Company existing = new Company(rs.getString("id_company"), rs.getString("name"), rs.getString("location"));
+                if (normalizedLocation.isEmpty()) {
+                    normalizedLocation = existing.getLocation();
+                }
+                return existing;
             } else {
-              
                 String newId = UUID.randomUUID().toString();
                 String sqlInsert = "INSERT INTO companies (id_company, name, location, jumlah_alumni) VALUES (?, ?, ?, 0)";
                 PreparedStatement psInsert = conn.prepareStatement(sqlInsert);
                 psInsert.setString(1, newId);
-                psInsert.setString(2, companyName);
-                psInsert.setString(3, location != null && !location.isEmpty() ? location : "Indonesia");
+                psInsert.setString(2, normalizedName);
+                psInsert.setString(3, normalizedLocation.isEmpty() ? "Indonesia" : normalizedLocation);
                 psInsert.executeUpdate();
-                return new Company(newId, companyName, location);
+                return new Company(newId, normalizedName, normalizedLocation.isEmpty() ? "Indonesia" : normalizedLocation);
             }
         } catch (Exception e) {
             System.out.println("Error findOrCreate company: " + e.getMessage());
@@ -88,20 +109,23 @@ public class Company extends JDBC implements GenerateID, interfaces.Searching {
     }
 
     public static java.util.List<Company> getAllCompanies() {
-        java.util.List<Company> list = new java.util.ArrayList<>();
+        Map<String, Company> unique = new LinkedHashMap<>();
         try (Connection conn = JDBC.getConnection()) {
             String sql = "SELECT * FROM companies ORDER BY name ASC";
             PreparedStatement ps = conn.prepareStatement(sql);
             java.sql.ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Company c = new Company(rs.getString("id_company"), rs.getString("name"), rs.getString("location"));
-                c.setJumlahAlumni(rs.getInt("jumlah_alumni"));
-                list.add(c);
+                String key = normalizeKey(rs.getString("name"));
+                if (!unique.containsKey(key)) {
+                    Company c = new Company(rs.getString("id_company"), rs.getString("name"), rs.getString("location"));
+                    c.setJumlahAlumni(rs.getInt("jumlah_alumni"));
+                    unique.put(key, c);
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getAllCompanies: " + e.getMessage());
         }
-        return list;
+        return new java.util.ArrayList<>(unique.values());
     }
 
     @Override
