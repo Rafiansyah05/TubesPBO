@@ -90,24 +90,27 @@
 
             <!-- Recent Alumni Table -->
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Alumni Terbaru</h3>
+                <div class="card-header" style="height: auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 class="card-title">Daftar Alumni</h3>
+                    </div>
                     <a href="${pageContext.request.contextPath}/admin/alumni" style="color: var(--primary); font-size: 14px; font-weight: 600; text-decoration: none;">Lihat Semua</a>
                 </div>
+
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>Nama</th>
                                 <th style="text-align: center;">Jurusan</th>
-                                <th style="text-align: center;">Tahun</th>
+                                <th style="text-align: center;">Tahun Masuk</th>
                                 <th style="text-align: center;">Riwayat Pekerjaan</th>
                                 <th style="text-align: center;">Status Profil</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:forEach var="alumni" items="${daftarAlumni}">
-                                <tr>
+                                <tr data-name="${alumni.name}" data-year="${alumni.enrollmentYear}">
                                     <td>
                                         <div style="font-weight: 600;">${alumni.name}</div>
                                         <div style="font-size: 12px; color: var(--text-muted);">${alumni.email}</div>
@@ -126,6 +129,32 @@
             </div>
         </main>
     </div>
+
+    <script>
+        function resetFilterAdminDashboard() {
+            document.getElementById('filterNama').value = '';
+            document.getElementById('filterTahun').value = '';
+            filterAdminDashboard();
+        }
+
+        function filterAdminDashboard() {
+            const keyword = (document.getElementById('filterNama').value || '').toLowerCase().trim();
+            const year = (document.getElementById('filterTahun').value || '').trim();
+            const rows = document.querySelectorAll('table tbody tr');
+
+            rows.forEach(function (row) {
+                const name = (row.getAttribute('data-name') || '').toLowerCase();
+                const yearValue = String(row.getAttribute('data-year') || '');
+                const matchName = !keyword || name.includes(keyword);
+                const matchYear = !year || yearValue === year;
+
+                row.style.display = (matchName && matchYear) ? '' : 'none';
+            });
+        }
+
+        document.getElementById('filterNama').addEventListener('input', filterAdminDashboard);
+        document.getElementById('filterTahun').addEventListener('input', filterAdminDashboard);
+    </script>
 
 </body>
 </html>
