@@ -65,6 +65,8 @@ public class AdminController extends HttpServlet {
 
         if ("addAlumni".equals(action)) {
             handleAddAlumni(request, response, admin);
+        } else if ("addAdmin".equals(action)) {
+            handleAddAdmin(request, response, admin);
         } else if ("deleteAlumni".equals(action)) {
             handleDeleteAlumni(request, response, admin);
         } else if ("sendNotification".equals(action)) {
@@ -188,6 +190,36 @@ public class AdminController extends HttpServlet {
         }
     }
 
+    private void handleAddAdmin(HttpServletRequest request, HttpServletResponse response, Admin admin)
+            throws IOException, ServletException {
+
+        String name     = request.getParameter("name");
+        String email    = request.getParameter("email");
+        String password = request.getParameter("password");
+        String jabatan  = request.getParameter("jabatan");
+
+        Admin newAdmin = new Admin();
+        newAdmin.setIdUser(newAdmin.generateID());
+        newAdmin.setName(name);
+        newAdmin.setEmail(email);
+        newAdmin.setPassword(password);
+        newAdmin.setRole("admin");
+        newAdmin.setJabatan(jabatan);
+
+        if (!admin.verifyAdminData(newAdmin)) {
+            request.setAttribute("errorAdmin", "Data admin tidak lengkap");
+            showManageAlumni(request, response, admin);
+            return;
+        }
+
+        boolean success = admin.tambahAdmin(newAdmin);
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/admin/alumni?successAdmin=1");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/admin/alumni?errorAdmin=1");
+        }
+    }
+
     private void handleDeleteAlumni(HttpServletRequest request, HttpServletResponse response, Admin admin)
             throws IOException {
 
@@ -211,6 +243,7 @@ public class AdminController extends HttpServlet {
         if (subject == null || subject.isEmpty()) {
             subject = "Pengingat Update Data Alumni - SiAlumni";
         }
+        subject = "SiAlumni: " + subject;
         if (body == null || body.isEmpty()) {
             body = "Mohon perbarui data riwayat pekerjaan Anda di sistem SiAlumni.";
         }

@@ -1,6 +1,9 @@
 package models;
 
 import interfaces.GenerateID;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,25 +41,43 @@ public class User extends JDBC implements GenerateID {
         return UUID.randomUUID().toString();
     }
 
+    public static String hashPassword(String password) {
+        if (password == null) return null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not available", e);
+        }
+    }
 
     public boolean login(String email, String password) {
         try {
             connect();
             if (conn == null) return false;
-            String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+            String sql = "SELECT * FROM users WHERE email = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
-            ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-
-                this.idUser   = rs.getString("id_user");
-                this.name     = rs.getString("name");
-                this.email    = rs.getString("email");
-                this.password = rs.getString("password");
-                this.role     = rs.getString("role");
-                return true;
+                String dbPassword = rs.getString("password");
+                String hashedPassword = hashPassword(password);
+                
+                // Support keduanya: cek hashed atau plain text untuk backward compatibility
+                if (dbPassword.equals(hashedPassword) || dbPassword.equals(password)) {
+                    this.idUser   = rs.getString("id_user");
+                    this.name     = rs.getString("name");
+                    this.email    = rs.getString("email");
+                    this.password = rs.getString("password");
+                    this.role     = rs.getString("role");
+                    return true;
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error login: " + e.getMessage());
@@ -88,7 +109,7 @@ public class User extends JDBC implements GenerateID {
             if (conn == null) return false;
             String sql = "UPDATE users SET password = ? WHERE id_user = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, newPassword);
+            ps.setString(1, hashPassword(newPassword));
             ps.setString(2, this.idUser);
             int rows = ps.executeUpdate();
             return rows > 0;

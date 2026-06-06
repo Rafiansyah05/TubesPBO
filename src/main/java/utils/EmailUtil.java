@@ -14,7 +14,7 @@ public class EmailUtil {
 
     private static final String RESEND_API_KEY = "re_QbiCAtpo_2Em9ZQne4sd5Prg2sLcsivbF";
     private static final String RESEND_URL      = "https://api.resend.com/emails";
-    private static final String FROM_EMAIL      = "noreply@pradatelyu.online";
+    private static final String FROM_EMAIL      = "SiAlumni <noreply@pradatelyu.online>";
 
  
     public static boolean sendEmail(String to, String subject, String body) {

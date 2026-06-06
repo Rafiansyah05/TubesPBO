@@ -18,6 +18,10 @@ public class Alumni extends User implements Searching {
     private String statusLabel;
     private String statusClass;
     private String statusCode;
+    // private java.sql.Timestamp lastUpdateTime;
+    // private String lastUpdateHumanReadable;
+    // private java.sql.Timestamp lastUpdateTime;
+    // private String lastUpdateHumanReadable;
 
 
     public Alumni() {
@@ -52,7 +56,7 @@ public class Alumni extends User implements Searching {
             psUser.setString(1, getIdUser());
             psUser.setString(2, getName());
             psUser.setString(3, getEmail());
-            psUser.setString(4, getPassword());
+            psUser.setString(4, hashPassword(getPassword()));
             psUser.executeUpdate();
 
        
@@ -251,6 +255,12 @@ public class Alumni extends User implements Searching {
 
     public String getStatusCode() { return statusCode; }
     public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+
+    // public java.sql.Timestamp getLastUpdateTime() { return lastUpdateTime; }
+    // public void setLastUpdateTime(java.sql.Timestamp lastUpdateTime) { this.lastUpdateTime = lastUpdateTime; }
+
+    // public String getLastUpdateHumanReadable() { return lastUpdateHumanReadable; }
+    // public void setLastUpdateHumanReadable(String lastUpdateHumanReadable) { this.lastUpdateHumanReadable = lastUpdateHumanReadable; }
 
     public ArrayList<JobExperience> getJobExperienceList() { return jobExperience; }
     public void setJobExperienceList(ArrayList<JobExperience> j) { this.jobExperience = j; }
