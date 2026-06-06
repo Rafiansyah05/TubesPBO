@@ -178,3 +178,7 @@
 0:0:0:0:0:0:0:1 - - [06/Jun/2026:12:28:35 +0700] "POST /SiAlumni/auth HTTP/1.1" 302 - http-bio-8080-exec-10 2332
 0:0:0:0:0:0:0:1 - - [06/Jun/2026:12:28:35 +0700] "GET /SiAlumni/alumni/dashboard HTTP/1.1" 200 5781 http-bio-8080-exec-10 774
 0:0:0:0:0:0:0:1 - - [06/Jun/2026:12:28:47 +0700] "GET /SiAlumni/alumni/profile HTTP/1.1" 200 16388 http-bio-8080-exec-10 1549
+0:0:0:0:0:0:0:1 - - [06/Jun/2026:13:06:13 +0700] "GET /SiAlumni/alumni/dashboard HTTP/1.1" 302 - http-bio-8080-exec-9 127
+0:0:0:0:0:0:0:1 - - [06/Jun/2026:13:06:13 +0700] "GET /SiAlumni/auth HTTP/1.1" 200 2879 http-bio-8080-exec-9 43
+0:0:0:0:0:0:0:1 - - [06/Jun/2026:13:06:13 +0700] "GET /SiAlumni/assets/css/style.css HTTP/1.1" 304 - http-bio-8080-exec-9 54
+0:0:0:0:0:0:0:1 - - [06/Jun/2026:13:06:17 +0700] "GET /SiAlumni/ HTTP/1.1" 200 19820 http-bio-8080-exec-9 1033

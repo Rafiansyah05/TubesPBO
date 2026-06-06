@@ -84,10 +84,7 @@
                                 <input type="number" name="enrollment_year" class="form-control" value="${user.enrollmentYear}" required>
                             </div>
                             <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
-                            <div class="form-group">
-                                <label>Password Baru (Kosongkan jika tidak ganti)</label>
-                                <input type="password" name="new_password" class="form-control" placeholder="••••••••">
-                            </div>
+                          
                             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </form>
                     </div>
