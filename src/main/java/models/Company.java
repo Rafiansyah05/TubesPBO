@@ -18,6 +18,7 @@ public class Company extends JDBC implements GenerateID, interfaces.Searching {
     private String location;
     private java.util.ArrayList<Alumni> daftarAlumni;
     private int jumlahAlumni;
+    private static int compCounter = 10;
 
     public Company() {
         this.daftarAlumni = new java.util.ArrayList<>();
@@ -41,7 +42,8 @@ public class Company extends JDBC implements GenerateID, interfaces.Searching {
 
     @Override
     public String generateID() {
-        return UUID.randomUUID().toString();
+        compCounter++;
+        return "comp-" + String.format("%03d", compCounter);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class Company extends JDBC implements GenerateID, interfaces.Searching {
                 }
                 return existing;
             } else {
-                String newId = UUID.randomUUID().toString();
+                String newId = new Company().generateID();
                 String sqlInsert = "INSERT INTO companies (id_company, name, location, jumlah_alumni) VALUES (?, ?, ?, 0)";
                 PreparedStatement psInsert = conn.prepareStatement(sqlInsert);
                 psInsert.setString(1, newId);
