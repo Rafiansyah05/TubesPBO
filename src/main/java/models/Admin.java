@@ -58,6 +58,42 @@ public class Admin extends User implements Searching {
             && alumni.getEnrollmentYear() > 0;
     }
 
+    public boolean verifyAdminData(Admin admin) {
+        return admin.getName()  != null && !admin.getName().isEmpty()
+            && admin.getEmail() != null && !admin.getEmail().isEmpty()
+            && admin.getJabatan() != null && !admin.getJabatan().isEmpty();
+    }
+
+    public boolean tambahAdmin(Admin admin) {
+        try {
+            connect();
+            if (conn == null) return false;
+            
+            // Insert into users table
+            String sqlUser = "INSERT INTO users (id_user, name, email, password, role) VALUES (?, ?, ?, ?, 'admin')";
+            PreparedStatement psUser = conn.prepareStatement(sqlUser);
+            psUser.setString(1, admin.getIdUser());
+            psUser.setString(2, admin.getName());
+            psUser.setString(3, admin.getEmail());
+            psUser.setString(4, hashPassword(admin.getPassword()));
+            psUser.executeUpdate();
+
+            // Insert into admin table
+            String sqlAdmin = "INSERT INTO admin (id_user, jabatan) VALUES (?, ?)";
+            PreparedStatement psAdmin = conn.prepareStatement(sqlAdmin);
+            psAdmin.setString(1, admin.getIdUser());
+            psAdmin.setString(2, admin.getJabatan());
+            psAdmin.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error tambah admin: " + e.getMessage());
+            return false;
+        } finally {
+            disconnect();
+        }
+    }
+
    
     public ArrayList<Alumni> getDaftarAlumni() {
         ArrayList<Alumni> list = new ArrayList<>();
@@ -71,33 +107,81 @@ public class Admin extends User implements Searching {
                        + "JOIN alumni a ON u.id_user = a.id_user "
                        + "ORDER BY u.name ASC";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Alumni alumni = new Alumni(
-                    rs.getString("id_user"),
-                    rs.getString("name"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("major"),
-                    rs.getInt("enrollment_year"),
-                    rs.getInt("jumlah_job")
-                );
-                Timestamp createdAt = rs.getTimestamp("created_at");
-                Timestamp lastTouch = rs.getTimestamp("last_touch");
-                String[] status = buildStatus(createdAt, lastTouch);
-                alumni.setStatusLabel(status[0]);
-                alumni.setStatusClass(status[1]);
-                alumni.setStatusCode(status[2]);
-                list.add(alumni);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Alumni alumni = new Alumni(
+                        rs.getString("id_user"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("major"),
+                        rs.getInt("enrollment_year"),
+                        rs.getInt("jumlah_job")
+                    );
+                    Timestamp createdAt = rs.getTimestamp("created_at");
+                    Timestamp lastTouch = rs.getTimestamp("last_touch");
+                    String[] status = buildStatus(createdAt, lastTouch);
+                    alumni.setStatusLabel(status[0]);
+                    alumni.setStatusClass(status[1]);
+                    alumni.setStatusCode(status[2]);
+                    list.add(alumni);
+                }
             }
-            this.daftarAlumni = list;
-            this.jumlahAlumni = list.size();
         } catch (SQLException e) {
             System.out.println("Error getDaftarAlumni: " + e.getMessage());
         } finally {
             disconnect();
         }
+        this.daftarAlumni = list;
+        this.jumlahAlumni = list.size();
+        return list;
+    }
+
+    /**
+     * Retrieve paginated list of alumni with optional offset and limit.
+     * Uses SQL LIMIT/OFFSET for efficient data fetching.
+     */
+    public java.util.List<Alumni> getDaftarAlumniPaginated(int offset, int limit) {
+        java.util.List<Alumni> list = new java.util.ArrayList<>();
+        String sql = "SELECT u.id_user, u.name, u.email, u.password, u.role, "
+                   + "a.enrollment_year, a.major, a.jumlah_job, u.created_at, "
+                   + "COALESCE((SELECT MAX(j.created_at) FROM job_experience j WHERE j.id_alumni = u.id_user), u.created_at) AS last_touch "
+                   + "FROM users u JOIN alumni a ON u.id_user = a.id_user "
+                   + "ORDER BY u.name ASC LIMIT ? OFFSET ?";
+        try {
+            connect();
+            if (conn == null) return list;
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, limit);
+                ps.setInt(2, offset);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Alumni alumni = new Alumni(
+                            rs.getString("id_user"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("major"),
+                            rs.getInt("enrollment_year"),
+                            rs.getInt("jumlah_job")
+                        );
+                        java.sql.Timestamp createdAt = rs.getTimestamp("created_at");
+                        java.sql.Timestamp lastTouch = rs.getTimestamp("last_touch");
+                        String[] status = buildStatus(createdAt, lastTouch);
+                        alumni.setStatusLabel(status[0]);
+                        alumni.setStatusClass(status[1]);
+                        alumni.setStatusCode(status[2]);
+                        list.add(alumni);
+                    }
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error getDaftarAlumniPaginated: " + e.getMessage());
+        } finally {
+            disconnect();
+        }
+        this.daftarAlumni = new ArrayList<>(list);
+        this.jumlahAlumni = list.size();
         return list;
     }
 

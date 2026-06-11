@@ -1,5 +1,6 @@
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\models\JobExperience.java
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\controllers\AuthController.java
+D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\models\SchedulerSetting.java
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\models\Company.java
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\controllers\AdminController.java
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\utils\EmailUtil.java
@@ -13,3 +14,4 @@ D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\models\Alumni.jav
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\models\EmailNotification.java
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\interfaces\GenerateID.java
 D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\interfaces\Searching.java
+D:\TUGAS\TUBES PBO\CareerTrace2\code_careerTrace\src\main\java\utils\EmailSchedulerListener.java

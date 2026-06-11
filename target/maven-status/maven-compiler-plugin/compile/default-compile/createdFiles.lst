@@ -2,12 +2,14 @@ models\Admin.class
 models\Alumni.class
 models\Company.class
 controllers\AuthController.class
+utils\EmailSchedulerListener.class
 controllers\AdminController.class
 utils\EmailUtil.class
 models\EmailNotification.class
 models\User.class
 models\JobExperience.class
 models\CareerStatistic$1.class
+models\SchedulerSetting.class
 interfaces\Searching.class
 controllers\PublicController.class
 interfaces\GenerateID.class

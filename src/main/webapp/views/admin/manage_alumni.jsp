@@ -114,13 +114,9 @@
                                     <td style="text-align: center;"><span class="badge badge-warning">${alumni.jumlahJob} Pekerjaan</span></td>
                                     <td style="text-align: center;"><span class="badge ${alumni.statusClass}">${alumni.statusLabel}</span></td>
                                     <td style="text-align: center;">
-                                        <form action="${pageContext.request.contextPath}/admin/alumni" method="post" onsubmit="return confirm('Hapus alumni ini?')">
-                                            <input type="hidden" name="action" value="deleteAlumni">
-                                            <input type="hidden" name="id_alumni" value="${alumni.idUser}">
-                                            <button type="submit" style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px;">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="openDeleteModal('${alumni.idUser}', '${alumni.name}', '${alumni.email}')" style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px;">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -144,6 +140,41 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Modal Hapus Alumni -->
+    <div id="modalDelete" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div class="auth-card" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-weight: 800; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Hapus Alumni</h3>
+                <button onclick="document.getElementById('modalDelete').style.display='none'" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <p id="deleteAlumniInfo" style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;"></p>
+            <form action="${pageContext.request.contextPath}/admin/alumni" method="post">
+                <input type="hidden" name="action" value="deleteAlumni">
+                <input type="hidden" id="delete_id_alumni" name="id_alumni" value="">
+                <input type="hidden" id="delete_alumni_name" name="alumni_name" value="">
+                <input type="hidden" id="delete_alumni_email" name="alumni_email" value="">
+                <div class="form-group">
+                    <label>Alasan Penghapusan</label>
+                    <select name="delete_reason" id="delete_reason" class="form-control" style="height: 48px;" required>
+                        <option value="">-- Pilih Alasan --</option>
+                        <option value="Data tidak valid atau duplikat">Data tidak valid atau duplikat</option>
+                        <option value="Permintaan dari alumni bersangkutan">Permintaan dari alumni bersangkutan</option>
+                        <option value="Pelanggaran kebijakan sistem">Pelanggaran kebijakan sistem</option>
+                        <option value="Alumni tidak lagi terdaftar di institusi">Alumni tidak lagi terdaftar di institusi</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Detail Alasan (Opsional)</label>
+                    <textarea name="delete_detail" class="form-control" rows="3" placeholder="Jelaskan alasan lebih lanjut..."></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; background: var(--danger); color: white; display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 16px; padding: 16px 24px; font-weight: 600;">
+                    <i class="fas fa-trash-alt"></i> Konfirmasi Hapus
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Modal Notifikasi Email (Sederhana dengan CSS) -->
@@ -219,6 +250,15 @@
             const checkboxes = document.querySelectorAll('.alumni-checkbox');
             checkboxes.forEach(cb => cb.checked = false);
             updateSelection();
+        }
+
+        function openDeleteModal(id, name, email) {
+            document.getElementById('delete_id_alumni').value = id;
+            document.getElementById('delete_alumni_name').value = name;
+            document.getElementById('delete_alumni_email').value = email;
+            document.getElementById('deleteAlumniInfo').innerHTML = 'Anda akan menghapus akun <strong>' + name + '</strong> (' + email + '). Email pemberitahuan akan dikirim ke alumni.';
+            document.getElementById('delete_reason').value = '';
+            document.getElementById('modalDelete').style.display = 'flex';
         }
     </script>
 

@@ -220,6 +220,30 @@
     </div>
 
     <script>
+        const companyNameInput = document.getElementById('company_name_input');
+        const companyLocationInput = document.getElementById('company_location_input');
+        const industriInput = document.getElementById('industri_input');
+        const jabatanInput = document.getElementById('jabatan_input');
+        const startDateInput = document.getElementById('start_date_input');
+        const endDateInput = document.getElementById('end_date_input');
+        const submitBtn = document.getElementById('modal_submit_btn');
+
+        function validateJobForm() {
+            const isCompanyNameValid = companyNameInput.value.trim() !== '';
+            const isLocationValid = companyLocationInput.value.trim() !== '';
+            const isIndustriValid = industriInput.value !== '';
+            const isJabatanValid = jabatanInput.value.trim() !== '';
+            const isStartDateValid = startDateInput.value !== '';
+
+            let isEndDateValid = true;
+            if (startDateInput.value && endDateInput.value) {
+                isEndDateValid = endDateInput.value >= startDateInput.value;
+            }
+
+            const isValid = isCompanyNameValid && isLocationValid && isIndustriValid && isJabatanValid && isStartDateValid && isEndDateValid;
+            submitBtn.disabled = !isValid;
+        }
+
         function closeModalJob() {
             document.getElementById('modalJob').style.display = 'none';
             document.getElementById('modal_action').value = 'addJob';
@@ -227,43 +251,69 @@
             document.getElementById('modalJobTitle').textContent = 'Tambah Riwayat Pekerjaan';
             document.getElementById('modal_submit_btn').textContent = 'Tambah Sekarang';
             document.getElementById('jobForm').reset();
+            endDateInput.removeAttribute('min');
+            validateJobForm();
         }
 
         function openAddJob() {
             closeModalJob();
             document.getElementById('modalJob').style.display = 'flex';
+            validateJobForm();
         }
 
         function openEditJob(button) {
             const tr = button.closest('tr');
             if (!tr) return;
 
-            document.getElementById('company_name_input').value = tr.dataset.company || '';
-            document.getElementById('company_location_input').value = tr.dataset.location || '';
-            document.getElementById('industri_input').value = tr.dataset.industri || 'Teknologi';
-            document.getElementById('jabatan_input').value = tr.dataset.jabatan || '';
-            document.getElementById('start_date_input').value = tr.dataset.start || '';
-            document.getElementById('end_date_input').value = tr.dataset.end || '';
+            companyNameInput.value = tr.dataset.company || '';
+            companyLocationInput.value = tr.dataset.location || '';
+            industriInput.value = tr.dataset.industri || 'Teknologi';
+            jabatanInput.value = tr.dataset.jabatan || '';
+            
+            const startDate = tr.dataset.start || '';
+            startDateInput.value = startDate;
+            endDateInput.value = tr.dataset.end || '';
+
+            if (startDate) {
+                endDateInput.min = startDate;
+            } else {
+                endDateInput.removeAttribute('min');
+            }
 
             document.getElementById('modal_action').value = 'editJob';
             document.getElementById('modal_id_job').value = tr.dataset.id || '';
             document.getElementById('modalJobTitle').textContent = 'Edit Riwayat Pekerjaan';
             document.getElementById('modal_submit_btn').textContent = 'Simpan Perubahan';
             document.getElementById('modalJob').style.display = 'flex';
+            validateJobForm();
         }
 
-        document.getElementById('company_name_input').addEventListener('input', function() {
+        startDateInput.addEventListener('change', function() {
+            endDateInput.min = this.value;
+            if (endDateInput.value && endDateInput.value < this.value) {
+                endDateInput.value = '';
+            }
+            validateJobForm();
+        });
+
+        endDateInput.addEventListener('change', validateJobForm);
+        companyLocationInput.addEventListener('input', validateJobForm);
+        industriInput.addEventListener('change', validateJobForm);
+        jabatanInput.addEventListener('input', validateJobForm);
+
+        companyNameInput.addEventListener('input', function() {
             const val = this.value;
             const opts = document.getElementById('companyList').childNodes;
             for (let i = 0; i < opts.length; i++) {
                 if (opts[i].value === val) {
                     const loc = opts[i].getAttribute('data-location');
                     if (loc) {
-                        document.getElementById('company_location_input').value = loc;
+                        companyLocationInput.value = loc;
                     }
                     break;
                 }
             }
+            validateJobForm();
         });
     </script>
 </body>

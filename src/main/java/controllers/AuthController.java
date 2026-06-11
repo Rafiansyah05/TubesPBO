@@ -3,6 +3,7 @@ package controllers;
 import models.Admin;
 import models.Alumni;
 import models.JDBC;
+import models.User;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -65,30 +66,29 @@ public class AuthController extends HttpServlet {
             return;
         }
 
-        Admin admin = new Admin();
-        if (admin.login(email, password) && "admin".equals(admin.getRole())) {
-      
-            HttpSession session = request.getSession();
-            session.setAttribute("user", admin);
-            session.setAttribute("role", "admin");
-            session.setAttribute("userName", admin.getName());
-            session.setMaxInactiveInterval(30 * 60); // 30 menit
-            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-            return;
-        }
-
-        Alumni alumni = new Alumni();
-        if (alumni.login(email, password) && "alumni".equals(alumni.getRole())) {
-      
-            alumni = getAlumniData(alumni);
-           
-            HttpSession session = request.getSession();
-            session.setAttribute("user", alumni);
-            session.setAttribute("role", "alumni");
-            session.setAttribute("userName", alumni.getName());
-            session.setMaxInactiveInterval(30 * 60);
-            response.sendRedirect(request.getContextPath() + "/alumni/dashboard");
-            return;
+        User loginUser = new User();
+        if (loginUser.login(email, password)) {
+            if ("admin".equals(loginUser.getRole())) {
+                Admin admin = new Admin(loginUser.getIdUser(), loginUser.getName(), loginUser.getEmail(), loginUser.getPassword(), null);
+                HttpSession session = request.getSession();
+                session.setAttribute("user", admin);
+                session.setAttribute("role", "admin");
+                session.setAttribute("userName", admin.getName());
+                session.setMaxInactiveInterval(30 * 60); // 30 menit
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                return;
+            } else if ("alumni".equals(loginUser.getRole())) {
+                Alumni alumni = new Alumni(loginUser.getIdUser(), loginUser.getName(), loginUser.getEmail(), loginUser.getPassword(), null, 0, 0);
+                alumni = getAlumniData(alumni);
+               
+                HttpSession session = request.getSession();
+                session.setAttribute("user", alumni);
+                session.setAttribute("role", "alumni");
+                session.setAttribute("userName", alumni.getName());
+                session.setMaxInactiveInterval(30 * 60);
+                response.sendRedirect(request.getContextPath() + "/alumni/dashboard");
+                return;
+            }
         }
 
    

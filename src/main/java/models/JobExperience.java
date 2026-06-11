@@ -40,6 +40,7 @@ public class JobExperience extends JDBC implements GenerateID {
 
     
     public boolean insert(String idAlumni) {
+        if (endDate != null && endDate.before(startDate)) return false;
         try {
             connect();
             if (conn == null) return false;
@@ -80,6 +81,7 @@ public class JobExperience extends JDBC implements GenerateID {
 
     
     public boolean update() {
+        if (endDate != null && endDate.before(startDate)) return false;
         try {
             connect();
             if (conn == null) return false;

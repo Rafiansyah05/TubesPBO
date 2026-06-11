@@ -62,6 +62,71 @@
                 </div>
             </c:if>
 
+            <c:if test="${not empty successMessage}">
+                <div class="alert alert-success" style="margin-bottom: 30px;">
+                    <i class="fas fa-check-circle"></i> ${successMessage}
+                </div>
+            </c:if>
+            <c:if test="${not empty errorMessage}">
+                <div class="alert alert-danger" style="margin-bottom: 30px; background: #FED7D7; color: #9B2C2C;">
+                    <i class="fas fa-exclamation-circle"></i> ${errorMessage}
+                </div>
+            </c:if>
+
+            <!-- Pengaturan Email Otomatis -->
+            <div class="card" style="margin-bottom: 30px; padding: 25px;">
+                <h3 style="margin-bottom: 20px; font-weight: 800; color: var(--primary);">Pengaturan Email Otomatis</h3>
+                <form action="${pageContext.request.contextPath}/admin/email-log" method="post" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="hidden" name="action" value="saveSchedulerSettings">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Status Pengiriman Otomatis</label>
+                            <select name="enabled" class="form-control" style="height: 48px;">
+                                <option value="true" ${schedulerSetting.enabled ? 'selected' : ''}>Aktif</option>
+                                <option value="false" ${!schedulerSetting.enabled ? 'selected' : ''}>Nonaktif</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Setiap Berapa Waktu</label>
+                            <input type="number" name="interval_value" class="form-control" style="height: 48px;" min="1" value="${schedulerSetting.intervalValue}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Satuan Waktu</label>
+                            <select name="interval_unit" class="form-control" style="height: 48px;">
+                                <option value="days" ${schedulerSetting.intervalUnit == 'days' ? 'selected' : ''}>Hari (24 Jam)</option>
+                                <option value="hours" ${schedulerSetting.intervalUnit == 'hours' ? 'selected' : ''}>Jam</option>
+                                <option value="minutes" ${schedulerSetting.intervalUnit == 'minutes' ? 'selected' : ''}>Menit</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Subjek Email Otomatis</label>
+                            <input type="text" name="subject" class="form-control" style="height: 48px;" value="${schedulerSetting.subject}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Isi Email Otomatis</label>
+                            <textarea name="body" class="form-control" rows="4" required>${schedulerSetting.body}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <span style="font-size: 13px; color: var(--text-muted);">
+                            Terakhir dikirim otomatis: 
+                            <c:choose>
+                                <c:when test="${not empty schedulerSetting.lastRun}">
+                                    <fmt:formatDate value="${schedulerSetting.lastRun}" pattern="dd MMM yyyy, HH:mm" />
+                                </c:when>
+                                <c:otherwise>Belum pernah</c:otherwise>
+                            </c:choose>
+                        </span>
+                        <button type="submit" class="btn btn-primary" style="width: auto; padding: 12px 24px; font-weight: 600;">Simpan Pengaturan</button>
+                    </div>
+                </form>
+            </div>
+
             <div class="card">
                 <div class="table-responsive">
                     <table>

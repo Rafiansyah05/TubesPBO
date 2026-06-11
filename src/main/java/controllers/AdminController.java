@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/admin/*")
@@ -71,6 +72,8 @@ public class AdminController extends HttpServlet {
             handleDeleteAlumni(request, response, admin);
         } else if ("sendNotification".equals(action)) {
             handleSendNotification(request, response, admin);
+        } else if ("saveSchedulerSettings".equals(action)) {
+            handleSaveSchedulerSettings(request, response, admin);
         }
     }
 
@@ -78,17 +81,12 @@ public class AdminController extends HttpServlet {
     private void showDashboard(HttpServletRequest request, HttpServletResponse response, Admin admin)
             throws ServletException, IOException {
 
-       
         int totalAlumni      = admin.getTotalAlumni();
         int alumniAktif      = admin.getAlumniAktifBekerja();
         int emailTerkirim    = admin.getEmailTerkirimBulanIni();
 
-     
-        ArrayList<Alumni> daftarAlumni = admin.getDaftarAlumni();
-        ArrayList<Alumni> recentAlumni = new ArrayList<>();
-        for (int i = 0; i < Math.min(10, daftarAlumni.size()); i++) {
-            recentAlumni.add(daftarAlumni.get(i));
-        }
+        // Fetch only the first 10 alumni for dashboard overview (efficient paginated query)
+        List<Alumni> recentAlumni = admin.getDaftarAlumniPaginated(0, 10);
 
         request.setAttribute("totalAlumni", totalAlumni);
         request.setAttribute("alumniAktif", alumniAktif);
@@ -101,7 +99,7 @@ public class AdminController extends HttpServlet {
     private void showManageAlumni(HttpServletRequest request, HttpServletResponse response, Admin admin)
             throws ServletException, IOException {
 
-     
+      
         String keyword = request.getParameter("q");
         String statusFilter = request.getParameter("status");
         ArrayList<Alumni> daftarAlumni;
@@ -123,20 +121,28 @@ public class AdminController extends HttpServlet {
             daftarAlumni = filtered;
         }
 
+        // Pagination parameters
         int page = 1;
-        try {
-            page = Integer.parseInt(request.getParameter("page"));
-        } catch (Exception e) { page = 1; }
-
+        String pageParam = request.getParameter("page");
+        if (pageParam != null && !pageParam.isEmpty()) {
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
         int pageSize = 10;
         int totalData = daftarAlumni.size();
         int totalPages = (int) Math.ceil((double) totalData / pageSize);
+        if (page > totalPages && totalPages > 0) {
+            page = totalPages;
+        }
 
-        int start = (page - 1) * pageSize;
-        int end   = Math.min(start + pageSize, totalData);
-        ArrayList<Alumni> pageData = new ArrayList<>();
-        for (int i = start; i < end; i++) {
-            pageData.add(daftarAlumni.get(i));
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalData);
+        List<Alumni> pageData = new ArrayList<>();
+        if (fromIndex < totalData && fromIndex >= 0) {
+            pageData = daftarAlumni.subList(fromIndex, toIndex);
         }
 
         request.setAttribute("daftarAlumni", pageData);
@@ -153,7 +159,31 @@ public class AdminController extends HttpServlet {
 
         ArrayList<Map<String, Object>> logs = EmailNotification.getAllLogs();
         request.setAttribute("emailLogs", logs);
+        request.setAttribute("schedulerSetting", models.SchedulerSetting.getSetting());
         request.getRequestDispatcher("/views/admin/email_log.jsp").forward(request, response);
+    }
+
+    private void handleSaveSchedulerSettings(HttpServletRequest request, HttpServletResponse response, Admin admin)
+            throws IOException, ServletException {
+        boolean enabled = Boolean.parseBoolean(request.getParameter("enabled"));
+        int intervalValue = 1;
+        try {
+            intervalValue = Integer.parseInt(request.getParameter("interval_value"));
+        } catch (NumberFormatException e) { }
+        String intervalUnit = request.getParameter("interval_unit");
+        String subject = request.getParameter("subject");
+        String body = request.getParameter("body");
+
+        models.SchedulerSetting setting = new models.SchedulerSetting(enabled, intervalValue, intervalUnit, subject, body, null);
+        boolean success = setting.save();
+
+        if (success) {
+            request.setAttribute("successMessage", "Pengaturan email otomatis berhasil disimpan");
+        } else {
+            request.setAttribute("errorMessage", "Gagal menyimpan pengaturan email otomatis");
+        }
+
+        showEmailLog(request, response, admin);
     }
 
     
@@ -224,7 +254,31 @@ public class AdminController extends HttpServlet {
             throws IOException {
 
         String idAlumni = request.getParameter("id_alumni");
+        // Retrieve additional form data for email notification
+        String alumniName = request.getParameter("alumni_name");
+        String alumniEmail = request.getParameter("alumni_email");
+        String deleteReason = request.getParameter("delete_reason");
+        String deleteDetail = request.getParameter("delete_detail");
+
+        // Perform deletion
         boolean success = admin.deleteAlumni(idAlumni);
+
+        // If deletion succeeded and email info is present, send notification email
+        if (success && alumniEmail != null && !alumniEmail.isEmpty()) {
+            String subject = "Pemberitahuan Penghapusan Akun SiAlumni";
+            StringBuilder bodyBuilder = new StringBuilder();
+            bodyBuilder.append("Halo ").append(alumniName != null ? alumniName : "Alumni").append(",<br><br>");
+            bodyBuilder.append("Akun Anda telah dihapus dari sistem SiAlumni.<br><br>");
+            if (deleteReason != null && !deleteReason.isEmpty()) {
+                bodyBuilder.append("<strong>Alasan:</strong> ").append(deleteReason).append("<br>");
+            }
+            if (deleteDetail != null && !deleteDetail.isEmpty()) {
+                bodyBuilder.append("<strong>Detail:</strong> ").append(deleteDetail).append("<br>");
+            }
+            bodyBuilder.append("<br>Jika Anda memiliki pertanyaan, silakan hubungi tim dukungan kami.");
+            utils.EmailUtil.sendEmail(alumniEmail, subject, bodyBuilder.toString());
+        }
+
 
         if (success) {
             response.sendRedirect(request.getContextPath() + "/admin/alumni?success=delete");
