@@ -36,9 +36,11 @@ public class User extends JDBC implements GenerateID {
         this.role     = role;
     }
 
+    private static int counter = 100;
     @Override
     public String generateID() {
-        return UUID.randomUUID().toString();
+        counter++;
+        return "alm-" + counter;
     }
 
     public static String hashPassword(String password) {
@@ -69,7 +71,6 @@ public class User extends JDBC implements GenerateID {
                 String dbPassword = rs.getString("password");
                 String hashedPassword = hashPassword(password);
                 
-                // Support keduanya: cek hashed atau plain text untuk backward compatibility
                 if (dbPassword.equals(hashedPassword) || dbPassword.equals(password)) {
                     this.idUser   = rs.getString("id_user");
                     this.name     = rs.getString("name");
