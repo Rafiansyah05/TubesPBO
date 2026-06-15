@@ -65,7 +65,7 @@ Berikut adalah tabel pembagian tanggung jawab detail per-orang untuk memastikan 
 
 ## 👥 Tabel Distribusi & Tanggung Jawab Anggota Tim
 
-### 1. 🟥 Bagian Muchammad Munawir H. R. (Pondasi, Auth, & Admin Base)
+### 1. 🟥 Bagian Ahmad Rafiansyah (Pondasi, Auth, & Admin Base)
 *Sebagai setup inisiator, Munawir bertugas menyiapkan pondasi awal proyek, database SQL, skema koneksi JDBC, base model user, dan halaman kelola admin.*
 
 | No | Path File / Folder | Deskripsi & Kegunaan | Status Tindakan | Keterangan Tambahan |
@@ -127,7 +127,7 @@ Berikut adalah tabel pembagian tanggung jawab detail per-orang untuk memastikan 
 
 ---
 
-### 4. 🟦 Bagian Ahmad Rafiansyah (Career Insight & Statistik)
+### 4. 🟦 Bagian Muchammad Munawir H. R.  (Career Insight & Statistik)
 *Ahmad fokus pada pencatatan instansi perusahaan dan pengolahan data statistik alumni berdasarkan industri serta jurusan.*
 
 | No | Path File / Folder | Deskripsi & Kegunaan | Status Tindakan | Keterangan Tambahan |
